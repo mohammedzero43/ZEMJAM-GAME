@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public float jumpTime = 0.5f;
     private float jumpTimer = 0f;
 
-    public float ExtraSpeed = 0 , ExtraJumpForce = 0;
+    public static float ExtraSpeed = 0 , ExtraJumpForce = 0;
     void Start()
     {
         controller = GetComponent<CharacterController>();
