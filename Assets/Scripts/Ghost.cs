@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class Ghost : MonoBehaviour
 {
-
+    Vector3 StartPos;
     public GameObject player;
     public GameObject ghost;
     List<Vector3> ghost_steps= new List<Vector3>();
@@ -16,12 +16,17 @@ public class Ghost : MonoBehaviour
     float recorder_timer;//:Timer = Timer.new();
     float playback_timer;//:Timer = Timer.new();
 
-    
+
+    [HideInInspector] public float Timer = 0;
+    public float GameTimer = 60;
+    public float WinTimer = 0;
+    public static int gold = 0;
+    bool TimerStarted = false;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        StartPos = player.transform.position;
 	    recording = false;
         playing = false;
 	    print("started");
@@ -30,13 +35,27 @@ public class Ghost : MonoBehaviour
     }
 
 
-
+    private void Update()
+    {
+        if (TimerStarted) Timer += Time.deltaTime;
+        print("TIMER :" + Timer);
+        if (Timer > GameTimer)
+        {
+            print("GAMEOVER");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
 
     public void _on_end_reached(){
 
 
         playing =false;
         recording= false;
+        WinTimer = Timer;
+        GameTimer = WinTimer;
+        TimerStarted = false;
+
+        player.transform.position = StartPos;
     }
 
 
