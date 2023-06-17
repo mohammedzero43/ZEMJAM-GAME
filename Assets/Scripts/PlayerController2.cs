@@ -46,7 +46,7 @@ public class PlayerController2 : MonoBehaviour
         {
             isJumping = false;
         }
-        if (collision.gameObject.layer == 7)
+        if (collision.gameObject.layer == 8)
         {
             if (isRampage) 
             {
@@ -58,9 +58,14 @@ public class PlayerController2 : MonoBehaviour
     {
         if (other.gameObject.layer == 7)
         {
+                isdead = true;
+                StartCoroutine(waitor());
+        }
+      /*  if (other.gameObject.layer == 7)
+        {
             isdead = true;
             StartCoroutine(waitor());
-        }
+        }*/
     }
     IEnumerator waitor() 
     {

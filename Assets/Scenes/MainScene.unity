@@ -879,6 +879,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Blocks And Bricks 10 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1000012140959314, guid: f062fa5660b145642af10dc6ca5cd57c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4000010834494286, guid: f062fa5660b145642af10dc6ca5cd57c, type: 3}
       propertyPath: m_RootOrder
       value: -1
@@ -9428,6 +9432,10 @@ PrefabInstance:
     - target: {fileID: 1000012140959314, guid: f062fa5660b145642af10dc6ca5cd57c, type: 3}
       propertyPath: m_Name
       value: Blocks And Bricks 10 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012140959314, guid: f062fa5660b145642af10dc6ca5cd57c, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4000010834494286, guid: f062fa5660b145642af10dc6ca5cd57c, type: 3}
       propertyPath: m_RootOrder
