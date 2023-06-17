@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
@@ -19,10 +21,18 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+
     public GameObject enterShopButton;
     public GameObject shopUI;
     public bool isEntered = false;
 
+    public float extraSpeed, extraJump;
+    public int speedPrice, jumpPrice, rampagePrice;
+
+    public Button buttonOne, buttonTwo, buttonThree;
+    public TMP_Text coinsText,textOne, textTwo, textThree;
+
+    public int coins = 5;
 
     void Start()
     {
@@ -32,13 +42,18 @@ public class ShopManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        coinsText.text = coins.ToString();
     }
 
     public void ShowShop()
     {
         shopUI.SetActive(true);
         enterShopButton.SetActive(false);
+        coinsText.text = coins.ToString();
+        textOne.text = speedPrice.ToString();
+        textTwo.text = jumpPrice.ToString();
+        textThree.text = rampagePrice.ToString();
+        UpdateButtons();
     }
 
     void HideShop()
@@ -65,4 +80,64 @@ public class ShopManager : MonoBehaviour
             HideShop();
         }
     } 
+
+    void UpdateButtons()
+    {
+        if(PlayerController2.ExtraSpeed > 0)
+        {
+            buttonOne.interactable = false;
+        }
+        else
+        {
+            buttonOne.interactable = true;
+        }
+
+        if(PlayerController2.ExtraJumpForce > 0)
+        {
+            buttonTwo.interactable = false;
+        }
+        else
+        {
+            buttonTwo.interactable = true;
+        }
+
+        if(PlayerController2.isRampage)
+        {
+            buttonThree.interactable = false;
+        }
+        else
+        {
+            buttonThree.interactable = true;
+        }
+    }
+
+    public void BuySpeedPower()
+    {
+        if(coins > speedPrice)
+        {
+            coins -= speedPrice;
+            PlayerController2.ExtraSpeed = extraSpeed;
+        }
+        UpdateButtons();
+    }
+
+    public void BuyJumpPower()
+    {
+        if(coins > jumpPrice)
+        {
+            coins -= jumpPrice;
+            PlayerController2.ExtraJumpForce = extraJump;
+        }
+        UpdateButtons();
+    }
+
+    public void BuyRampage()
+    {
+        if(coins > rampagePrice)
+        {
+            coins -= rampagePrice;
+            PlayerController2.isRampage = true;
+        }
+        UpdateButtons();
+    }
 }
