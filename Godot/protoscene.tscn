@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://8c3o4hr64ycf"]
+[gd_scene load_steps=10 format=3 uid="uid://8c3o4hr64ycf"]
 
 [sub_resource type="GDScript" id="GDScript_frflm"]
 resource_name = "playercontroller"
@@ -28,6 +28,11 @@ func _physics_process(delta):
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir = Input.get_vector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\")
+	if (input_dir.x)> 0 :
+		Globals.player_dir = \"right\";
+	if (input_dir.x)< 0 :	
+		Globals.player_dir = \"left\";
+		
 	var direction = (transform.basis * Vector3(input_dir.x, 0, 0)).normalized()
 	if direction:
 		velocity.x = direction.x * (SPEED + extra_speed) 
@@ -53,10 +58,18 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	global_position = lerp(global_position,Globals.player.get_node(\"CameraOffset\").global_position,0.03)
+	var offset = 3.6
+	if Globals.player_dir == \"center\":
+		offset = 0
+	elif Globals.player_dir == \"right\":
+		offset = -10
+	elif Globals.player_dir == \"left\":
+		offset = 10
+	
+	global_position = lerp(global_position,Globals.player.get_node(\"CameraOffset\").global_position + Vector3(offset,0,0),0.03) 
 	var tmp_rotation = global_rotation
 	look_at(Globals.player.global_position,Vector3.UP)
-	global_rotation = global_rotation.slerp(tmp_rotation,0.9)
+	global_rotation = global_rotation.slerp(tmp_rotation,0.3)
 "
 
 [sub_resource type="GDScript" id="GDScript_37ey4"]
@@ -67,41 +80,24 @@ script/source = "extends Node3D
 var ghost_steps:Array[Vector3]=[]
 @export var record_timestep = 0.2
  
-var recording = true
+var recording = false
 var playing = false
-
 var current_frame = 0
-
 var player_tween :Tween  
-var t:Timer = Timer.new()
 var recorder_timer:Timer = Timer.new()
 var playback_timer:Timer = Timer.new()
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Globals.ghost =  self
 	recording = true
 	print(\"started\")
-	add_child(t)
-	t.timeout.connect(on_timeout)
-	t.one_shot= true;
-	t.start(5)
 	
-	add_child(recorder_timer)
-	recorder_timer.timeout.connect(on_recorder_timeout)
-	recorder_timer.start(record_timestep)
+	ghost_steps.clear()
 	
-	
-	add_child(playback_timer)
-	playback_timer.timeout.connect(on_playback_timer)
 	
 	pass # Replace with function body.
-
-func on_timeout():
-	playing=true
-	recording= false
-	playback_timer.start(record_timestep)
-	print(\"started playback\")
 
 func on_recorder_timeout():
 	if (recording):
@@ -132,6 +128,31 @@ func _process(delta):
 			recording = false
 			
 		
+
+
+func _on_end_reached(body):
+	playing=false
+	recording= false
+
+
+
+
+func _on_start_point_body_entered(body):
+	
+	if (ghost_steps.size()<=0):
+		add_child(recorder_timer)
+		recorder_timer.timeout.connect(on_recorder_timeout)
+		recorder_timer.start(record_timestep)
+		playing = false
+		recording = true
+	else:
+		if !playing:
+			add_child(playback_timer)
+			playback_timer.timeout.connect(on_playback_timer)
+			playback_timer.start(record_timestep)
+			playing =true
+			recording = false
+			print(\"started playback\")
 "
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x4iti"]
@@ -152,10 +173,25 @@ func _process(delta):
 	pass
 "
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_yyc22"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_355gm"]
+transparency = 1
+albedo_color = Color(0.980392, 0, 0.419608, 0.32549)
+emission_enabled = true
+emission = Color(1, 0.658824, 0.729412, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fwl67"]
+transparency = 1
+albedo_color = Color(0.439216, 0.603922, 0, 0.32549)
+emission_enabled = true
+emission = Color(0.482353, 0.592157, 0, 1)
+
 [node name="Node3D" type="Node3D"]
 
 [node name="player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08169, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.4471, 1.47251, 0.0433726)
 script = SubResource("GDScript_frflm")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
@@ -164,14 +200,14 @@ shape = SubResource("BoxShape3D_cuwj4")
 [node name="CSGBox3D" type="CSGBox3D" parent="player"]
 
 [node name="CameraOffset" type="Marker3D" parent="player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0699301, 1.71543, 26.389)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.715, 24.347)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true
 size = Vector3(32, 1, 1)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0699301, 3.79712, 26.389)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00243783, 6.09735, 26.389)
 fov = 30.0
 script = SubResource("GDScript_xi5yg")
 
@@ -186,3 +222,26 @@ material_override = SubResource("StandardMaterial3D_x4iti")
 
 [node name="TimeManager" type="Node" parent="."]
 script = SubResource("GDScript_e4yw6")
+
+[node name="EndPoint" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8902, 1.60541, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EndPoint"]
+shape = SubResource("BoxShape3D_yyc22")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="EndPoint"]
+transform = Transform3D(2.16414, 0, 0, 0, 2.16414, 0, 0, 0, 2.16414, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_355gm")
+
+[node name="StartPoint" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.7009, 1.60541, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StartPoint"]
+shape = SubResource("BoxShape3D_yyc22")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="StartPoint"]
+transform = Transform3D(2.16414, 0, 0, 0, 2.16414, 0, 0, 0, 2.16414, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_fwl67")
+
+[connection signal="body_entered" from="EndPoint" to="Ghost" method="_on_end_reached"]
+[connection signal="body_entered" from="StartPoint" to="Ghost" method="_on_start_point_body_entered"]
