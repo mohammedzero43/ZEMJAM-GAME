@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class SpearAnimatorDelay : MonoBehaviour
 {
-    const int spearsCount=12;
+    int spearsCount;
     const float fixedDelay = 0.5f;
     float []delays;
     Animator []animators;
     string launchSpearAnimationParameter= "launch";
     private void Start()
     {
+        spearsCount = transform.childCount;
         animators = new Animator[spearsCount];
         delays = new float[spearsCount];
         for (int i = 0; i < spearsCount; i++)
