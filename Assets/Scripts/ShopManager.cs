@@ -19,8 +19,9 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-
-
+    public GameObject enterShopButton;
+    public GameObject shopUI;
+    public bool isEntered = false;
 
 
     void Start()
@@ -33,4 +34,35 @@ public class ShopManager : MonoBehaviour
     {
         
     }
+
+    public void ShowShop()
+    {
+        shopUI.SetActive(true);
+        enterShopButton.SetActive(false);
+    }
+
+    void HideShop()
+    {
+        shopUI.SetActive(false);
+        enterShopButton.SetActive(false);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isEntered = true;
+            enterShopButton.SetActive(true);
+        }
+    } 
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isEntered = false;
+            enterShopButton.SetActive(false);
+            HideShop();
+        }
+    } 
 }
