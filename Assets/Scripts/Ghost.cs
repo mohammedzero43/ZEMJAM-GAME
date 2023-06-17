@@ -15,7 +15,7 @@ public class Ghost : MonoBehaviour
     //var player_tween :Tween;  
     float recorder_timer;//:Timer = Timer.new();
     float playback_timer;//:Timer = Timer.new();
-
+    bool secondphase = false;
 
     [HideInInspector] public float Timer = 0;
     public float GameTimer = 60;
@@ -48,19 +48,27 @@ public class Ghost : MonoBehaviour
 
     public void _on_end_reached(){
 
+        if (secondphase)
+            TimerStarted = false;
+        else {
+            secondphase = true;
+        playing = false;
+            recording = false;
+            gold = (int)(GameTimer - Timer);
 
-        playing =false;
-        recording= false;
-        WinTimer = Timer;
-        GameTimer = WinTimer;
-        TimerStarted = false;
+            WinTimer = Timer;
+            GameTimer = WinTimer;
+            TimerStarted = false;
+            Timer = 0;
 
-        player.transform.position = StartPos;
+            player.transform.position = StartPos; 
+        }
     }
 
 
 
-    public void _on_start_point_body_entered(){
+    public void _on_start_point_body_entered() {
+        TimerStarted = true;
         if (ghost_steps.Count<=0){
             playing = false;
             recording = true;
