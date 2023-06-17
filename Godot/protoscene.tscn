@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://8c3o4hr64ycf"]
+[gd_scene load_steps=7 format=3 uid="uid://8c3o4hr64ycf"]
 
-[sub_resource type="GDScript" id="GDScript_ouau8"]
+[sub_resource type="GDScript" id="GDScript_frflm"]
+resource_name = "playercontroller"
 script/source = "extends CharacterBody3D
 
 
@@ -40,7 +41,26 @@ func _physics_process(delta):
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cuwj4"]
 
-[sub_resource type="GDScript" id="GDScript_j75nq"]
+[sub_resource type="GDScript" id="GDScript_xi5yg"]
+resource_name = "cameramanager"
+script/source = "extends Camera3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	global_position = lerp(global_position,Globals.player.get_node(\"CameraOffset\").global_position,0.03)
+	var tmp_rotation = global_rotation
+	look_at(Globals.player.global_position,Vector3.UP)
+	global_rotation = global_rotation.slerp(tmp_rotation,0.9)
+"
+
+[sub_resource type="GDScript" id="GDScript_37ey4"]
+resource_name = "ghostcontroller"
 script/source = "extends Node3D
 
 
@@ -117,29 +137,52 @@ func _process(delta):
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x4iti"]
 albedo_color = Color(0.337255, 1, 1, 1)
 
+[sub_resource type="GDScript" id="GDScript_e4yw6"]
+resource_name = "timemanager"
+script/source = "extends Node
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
 [node name="Node3D" type="Node3D"]
 
 [node name="player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08169, 0)
-script = SubResource("GDScript_ouau8")
+script = SubResource("GDScript_frflm")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
 shape = SubResource("BoxShape3D_cuwj4")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="player"]
 
+[node name="CameraOffset" type="Marker3D" parent="player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0699301, 1.71543, 26.389)
+
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true
 size = Vector3(32, 1, 1)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.84548, 14.7457)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0699301, 3.79712, 26.389)
+fov = 30.0
+script = SubResource("GDScript_xi5yg")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 
 [node name="Ghost" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.39061, 3.83217, 0)
-script = SubResource("GDScript_j75nq")
+script = SubResource("GDScript_37ey4")
 
 [node name="ghost" type="CSGBox3D" parent="Ghost"]
 material_override = SubResource("StandardMaterial3D_x4iti")
+
+[node name="TimeManager" type="Node" parent="."]
+script = SubResource("GDScript_e4yw6")
