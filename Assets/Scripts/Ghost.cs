@@ -1,80 +1,85 @@
-/*using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class Ghost : MonoBehaviour
 {
 
-
-    Vector3[] ghost_steps;
-    public float record_timestep = 0.2;
-    bool recording = true;
+    public GameObject player;
+    public GameObject ghost;
+    List<Vector3> ghost_steps= new List<Vector3>();
+    public float record_timestep = 0.2f;
+    bool recording = false;
     bool playing = false;
     int current_frame = 0;
     //var player_tween :Tween;  
     float recorder_timer;//:Timer = Timer.new();
     float playback_timer;//:Timer = Timer.new();
 
+    
+
     // Start is called before the first frame update
     void Start()
     {
 
-	Globals.ghost =  this;
-	recording = true;
-	print("started");
+	    recording = false;
+        playing = false;
+	    print("started");
 	
-	ghost_steps=new Vector3[];
+	    ghost_steps=new List<Vector3>();
     }
 
 
-    func on_recorder_timeout(){
-        if (recording){
-            ghost_steps.append(Globals.player.global_position);
-            Debug.Log("recorded");
-        }
-        else{
-            recorder_timer.stop();
-        }
-    }
-    func on_playback_timer(){
-        if (playing)
-        {
-            if (current_frame < ghost_steps.size()){
-                if (player_tween!= null)  player_tween.stop();
-                player_tween = create_tween() ;
-                player_tween.tween_property(Globals.ghost,"global_position",ghost_steps[current_frame],record_timestep);
-                current_frame+=1;
-            }
-            else { 
-                playback_timer.stop();
-            }
-        }
-    }
-    func _on_end_reached(Collider body){
-        playing=false;
+
+
+    public void _on_end_reached(){
+
+
+        playing =false;
         recording= false;
     }
 
 
 
-    func _on_start_point_body_entered(Collider body){
-        
-        if (ghost_steps.size()<=0){
-            add_child(recorder_timer);
-            recorder_timer.timeout.connect(on_recorder_timeout);
-            recorder_timer.start(record_timestep);
+    public void _on_start_point_body_entered(){
+        if (ghost_steps.Count<=0){
             playing = false;
             recording = true;
+            StartCoroutine(RecordingTimer());
         }
         else{
             if (!playing){
-                add_child(playback_timer);
-                playback_timer.timeout.connect(on_playback_timer);
-                playback_timer.start(record_timestep);
                 playing =true;
                 recording = false;
                 Debug.Log("started playback");
+                StartCoroutine(PlaybackTimer());
             }
+        }
+    }
+
+    public IEnumerator RecordingTimer()
+    {
+        while (recording)
+        {
+            ghost_steps.Add(player.transform.position);
+            Debug.Log("RECORDED FRAME");
+            yield return new WaitForSeconds(record_timestep);
+        }
+    }
+
+    public IEnumerator PlaybackTimer()
+    {
+        while (playing)
+        {
+            if (current_frame < ghost_steps.Count)
+            {
+                if (GetComponent<iTween>() != null) Destroy(GetComponent<iTween>());
+                iTween.MoveTo(ghost, ghost_steps[current_frame], record_timestep);
+                current_frame += 1;
+                yield return new WaitForSeconds(record_timestep);
+            }
+            else
+                break;
         }
     }
 }
@@ -82,7 +87,7 @@ public class Ghost : MonoBehaviour
 
 
 
-*//*
+/*
 
 # Called when the node enters the scene tree for the first time.
 
