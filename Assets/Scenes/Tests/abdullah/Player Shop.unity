@@ -316,7 +316,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 346401397987536275, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1762553180093488456, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
       propertyPath: m_RootOrder
@@ -417,6 +417,18 @@ PrefabInstance:
     - target: {fileID: 3326701962306087866, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595023226171910924, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595023226171910924, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595023226171910924, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 4317386049224294380, guid: e9737cd43c319331f91bdcc09c08f1a9, type: 3}
       propertyPath: m_Name

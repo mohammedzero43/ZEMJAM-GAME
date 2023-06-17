@@ -26,7 +26,7 @@ public class SpearAnimatorDelay : MonoBehaviour
     }
     IEnumerator CO_StartSpearAnimatorAfterDelay(int index)
     {
-        yield return Seconds.GetCachedWaitForSeconds(delays[index]);
+        yield return delays[index];
         print("spear " + index + " launched");
         animators[index].SetTrigger(launchSpearAnimationParameter);
     }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 public class Ghost : MonoBehaviour
 {
     Vector3 StartPos;
@@ -22,7 +23,8 @@ public class Ghost : MonoBehaviour
     public float WinTimer = 0;
     public static int gold = 0;
     bool TimerStarted = false;
-
+    bool isFinishedGame = false;
+    public TMP_Text timer1, timer2;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,23 +40,25 @@ public class Ghost : MonoBehaviour
     private void Update()
     {
         if (TimerStarted) Timer += Time.deltaTime;
-        print("TIMER :" + Timer);
         if (Timer > GameTimer)
         {
             print("GAMEOVER");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+        timer1.text = ""+Timer;
+        timer2.text = ""+GameTimer;
     }
 
     public void _on_end_reached(){
 
+        isFinishedGame = true;
         if (secondphase)
             TimerStarted = false;
         else {
             secondphase = true;
         playing = false;
             recording = false;
-            gold = (int)(GameTimer - Timer);
+            ShopManager.coins += (int)(GameTimer - Timer);
 
             WinTimer = Timer;
             GameTimer = WinTimer;
@@ -75,11 +79,15 @@ public class Ghost : MonoBehaviour
             StartCoroutine(RecordingTimer());
         }
         else{
-            if (!playing){
-                playing =true;
-                recording = false;
-                Debug.Log("started playback");
-                StartCoroutine(PlaybackTimer());
+            if (isFinishedGame)
+            {
+                if (!playing)
+                {
+                    playing = true;
+                    recording = false;
+                    Debug.Log("started playback");
+                    StartCoroutine(PlaybackTimer());
+                }
             }
         }
     }

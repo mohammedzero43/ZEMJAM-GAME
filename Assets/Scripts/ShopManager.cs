@@ -32,7 +32,7 @@ public class ShopManager : MonoBehaviour
     public Button buttonOne, buttonTwo, buttonThree;
     public TMP_Text coinsText,textOne, textTwo, textThree;
 
-    public int coins = 5;
+    public static int coins = 0;
 
     void Start()
     {
@@ -42,6 +42,7 @@ public class ShopManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         coinsText.text = coins.ToString();
     }
 
@@ -60,7 +61,6 @@ public class ShopManager : MonoBehaviour
     {
         shopUI.SetActive(false);
         enterShopButton.SetActive(false);
-        FindObjectOfType<PlayerController2>().resetPosition();
     }
 
     void OnTriggerEnter(Collider other)
