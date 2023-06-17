@@ -53,6 +53,7 @@ public class PlayerController2 : MonoBehaviour
             }
         }
     }
+    string endTag="End";
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == 7)
@@ -60,11 +61,11 @@ public class PlayerController2 : MonoBehaviour
                 isdead = true;
                 StartCoroutine(waitor());
         }
-      /*  if (other.gameObject.layer == 7)
+        else if(other.gameObject.tag==endTag)
         {
-            isdead = true;
-            StartCoroutine(waitor());
-        }*/
+
+        }
+
     }
     IEnumerator waitor() 
     {
