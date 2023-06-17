@@ -3,45 +3,68 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour
 {
-    public CharacterController cc;
-    [SerializeField] private GameObject player;
-    [SerializeField] private Camera cam;
-    [SerializeField] private float Sensitivity;
-    [SerializeField] Vector3 moveDirection;
+    private CharacterController controller;
+    private Vector3 moveDirection;
 
-    public float movementSpeed = 5f;
+
+    public float speed = 5f;
     public float jumpForce = 5f;
+    public float gravity = 9.81f;
 
+    private bool isJumping = false;
+    public float jumpTime = 0.5f;
+    private float jumpTimer = 0f;
 
-    private float X, Y;
-
-    private void Start()
+    public float ExtraSpeed = 0 , ExtraJumpForce = 0;
+    void Start()
     {
-        cc = GetComponent<CharacterController>();
-        cc.enabled = true;
-
+        controller = GetComponent<CharacterController>();
     }
-    private void FixedUpdate()
-    {
- 
 
+    void Update()
+    {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        moveDirection = new Vector3(horizontalInput, 0f, verticalInput);
-        moveDirection *= movementSpeed;
-
-        if (cc.isGrounded)
+        moveDirection = new Vector3(horizontalInput, 0f,0f );
+        moveDirection = transform.TransformDirection(moveDirection);
+        if (ExtraSpeed > 0)
         {
+            moveDirection *= (speed +ExtraSpeed);
+        }
+        else
+        {
+            moveDirection *= speed ;
+        }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+        if (controller.isGrounded)
+        {
+            if (Input.GetButtonDown("Jump"))
             {
-                moveDirection.y = jumpForce;
+                isJumping = true;
+                jumpTimer = 0f;
             }
         }
 
-        moveDirection.y += Physics.gravity.y * Time.deltaTime;
-        cc.Move(moveDirection * Time.fixedDeltaTime);
+        if (isJumping)
+        {
+            jumpTimer += Time.deltaTime;
+
+            if (jumpTimer < jumpTime)
+            {
+                moveDirection.y = jumpForce;
+            }
+            else
+            {
+                isJumping = false;
+            }
+        }
+        else
+        {
+            moveDirection.y -= gravity;
+        }
+        controller.Move(moveDirection * Time.deltaTime);
+        
     }
 }
 
