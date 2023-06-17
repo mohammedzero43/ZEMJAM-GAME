@@ -60,6 +60,7 @@ public class ShopManager : MonoBehaviour
     {
         shopUI.SetActive(false);
         enterShopButton.SetActive(false);
+        FindObjectOfType<PlayerController2>().resetPosition();
     }
 
     void OnTriggerEnter(Collider other)

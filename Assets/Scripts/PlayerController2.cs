@@ -67,6 +67,11 @@ public class PlayerController2 : MonoBehaviour
         }
 
     }
+    public void resetPosition()
+    {
+        this.transform.position = originalPos;
+
+    }
     IEnumerator waitor() 
     {
         yield return new WaitForSeconds(0.5f);
