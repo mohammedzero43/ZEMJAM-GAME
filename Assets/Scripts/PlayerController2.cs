@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class PlayerController2 : MonoBehaviour
 {
     private Rigidbody rb;
@@ -46,7 +45,7 @@ public class PlayerController2 : MonoBehaviour
         {
             isJumping = false;
         }
-        if (collision.gameObject.layer == 7)
+        if (collision.gameObject.layer == 8)
         {
             if (isRampage) 
             {
@@ -54,13 +53,19 @@ public class PlayerController2 : MonoBehaviour
             }
         }
     }
+    string endTag="End";
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == 7)
         {
-            isdead = true;
-            StartCoroutine(waitor());
+                isdead = true;
+                StartCoroutine(waitor());
         }
+        else if(other.gameObject.tag==endTag)
+        {
+
+        }
+
     }
     IEnumerator waitor() 
     {
