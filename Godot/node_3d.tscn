@@ -1,0 +1,145 @@
+[gd_scene load_steps=5 format=3 uid="uid://8c3o4hr64ycf"]
+
+[sub_resource type="GDScript" id="GDScript_ouau8"]
+script/source = "extends CharacterBody3D
+
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+
+var extra_speed = 0 
+var extra_jump_force = 0
+# Get the gravity from the project settings to be synced with RigidBody nodes.
+var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\")
+
+func _ready():
+	Globals.player = self
+	
+func _physics_process(delta):
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
+	# Handle Jump.
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY+extra_jump_force
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var input_dir = Input.get_vector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\")
+	var direction = (transform.basis * Vector3(input_dir.x, 0, 0)).normalized()
+	if direction:
+		velocity.x = direction.x * (SPEED + extra_speed) 
+		velocity.z = direction.z * (SPEED + extra_speed)
+	else:
+		velocity.x = move_toward(velocity.x, 0, (SPEED+ extra_speed))
+		velocity.z = move_toward(velocity.z, 0, (SPEED+ extra_speed))
+
+	move_and_slide()
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cuwj4"]
+
+[sub_resource type="GDScript" id="GDScript_j75nq"]
+script/source = "extends Node3D
+
+
+var ghost_steps:Array[Vector3]=[]
+@export var record_timestep = 0.2
+ 
+var recording = true
+var playing = false
+
+var current_frame = 0
+
+var player_tween :Tween  
+var t:Timer = Timer.new()
+var recorder_timer:Timer = Timer.new()
+var playback_timer:Timer = Timer.new()
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	Globals.ghost =  self
+	recording = true
+	print(\"started\")
+	add_child(t)
+	t.timeout.connect(on_timeout)
+	t.one_shot= true;
+	t.start(5)
+	
+	add_child(recorder_timer)
+	recorder_timer.timeout.connect(on_recorder_timeout)
+	recorder_timer.start(record_timestep)
+	
+	
+	add_child(playback_timer)
+	playback_timer.timeout.connect(on_playback_timer)
+	
+	pass # Replace with function body.
+
+func on_timeout():
+	playing=true
+	recording= false
+	playback_timer.start(record_timestep)
+	print(\"started playback\")
+
+func on_recorder_timeout():
+	if (recording):
+		ghost_steps.append(Globals.player.global_position)
+		print(\"recorded\")
+	else:
+		recorder_timer.stop()
+
+func on_playback_timer():
+	if (playing):
+		if current_frame < ghost_steps.size():
+			if (player_tween!= null) : player_tween.stop()
+			player_tween = create_tween() 
+			player_tween.tween_property(Globals.ghost,\"global_position\",ghost_steps[current_frame],record_timestep)
+			current_frame+=1
+		else : 
+			playback_timer.stop()
+			
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if (recording):
+		if (Globals.player != null):
+			playing=false
+			
+		
+	if (playing):
+		if (Globals.ghost != null):
+			recording = false
+			
+		
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x4iti"]
+albedo_color = Color(0.337255, 1, 1, 1)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08169, 0)
+script = SubResource("GDScript_ouau8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
+shape = SubResource("BoxShape3D_cuwj4")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="player"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(32, 1, 1)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.84548, 14.7457)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+
+[node name="Ghost" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.39061, 3.83217, 0)
+script = SubResource("GDScript_j75nq")
+
+[node name="ghost" type="CSGBox3D" parent="Ghost"]
+material_override = SubResource("StandardMaterial3D_x4iti")
