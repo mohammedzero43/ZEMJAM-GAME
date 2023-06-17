@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -82,7 +82,7 @@ public class Ghost : MonoBehaviour
 
 
 
-/*
+*//*
 
 # Called when the node enters the scene tree for the first time.
 
